@@ -15,26 +15,24 @@ type Bus struct {
 	subs []*sub
 }
 
-var bus Bus
-
-func init() {
-	bus.data = make(chan event.Event)
-
-	go bus.run()
-}
-
 func (b *Bus) run() {
 	for d := range b.data {
+		b.m.Lock()
 		for _, s := range b.subs {
 			if s.isAllowedToRead() {
 				s.data <- d
 			}
 		}
+		b.m.Unlock()
 	}
 }
 
 func New() *Bus {
-	return &bus
+	b := &Bus{}
+	b.data = make(chan event.Event)
+	go b.run()
+
+	return b
 }
 
 func (b *Bus) AddEvent(e event.Event, s *sub) {
@@ -56,7 +54,9 @@ func (b *Bus) ConnectToReadAndWrite() *sub {
 }
 
 func (b *Bus) addSub(s *sub) *sub {
+	b.m.Lock()
 	b.subs = append(b.subs, s)
+	b.m.Unlock()
 
 	return s
 }
