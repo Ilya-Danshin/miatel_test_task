@@ -4,15 +4,15 @@ import "bus/bus/event"
 
 const channelSize = 1024
 
-type Sub struct {
+type sub struct {
 	data chan event.Event
 
 	isAllowToRead  bool
 	isAllowToWrite bool
 }
 
-func newSub(readAllow, writeAllow bool) *Sub {
-	s := &Sub{
+func newSub(readAllow, writeAllow bool) *sub {
+	s := &sub{
 		isAllowToRead:  readAllow,
 		isAllowToWrite: writeAllow,
 	}
@@ -22,14 +22,14 @@ func newSub(readAllow, writeAllow bool) *Sub {
 	return s
 }
 
-func (s *Sub) isAllowedToRead() bool {
+func (s *sub) isAllowedToRead() bool {
 	return s.isAllowToRead
 }
 
-func (s *Sub) isAllowedToWrite() bool {
+func (s *sub) isAllowedToWrite() bool {
 	return s.isAllowToWrite
 }
 
-func (s *Sub) Read() event.Event {
+func (s *sub) Read() event.Event {
 	return <-s.data
 }

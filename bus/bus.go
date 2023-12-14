@@ -12,7 +12,7 @@ type Bus struct {
 
 	queue []event.Event
 
-	subs []*Sub
+	subs []*sub
 }
 
 var bus Bus
@@ -25,9 +25,9 @@ func init() {
 
 func (b *Bus) run() {
 	for d := range b.data {
-		for _, sub := range b.subs {
-			if sub.isAllowedToRead() {
-				sub.data <- d
+		for _, s := range b.subs {
+			if s.isAllowedToRead() {
+				s.data <- d
 			}
 		}
 	}
@@ -37,25 +37,25 @@ func New() *Bus {
 	return &bus
 }
 
-func (b *Bus) AddEvent(e event.Event, s *Sub) {
+func (b *Bus) AddEvent(e event.Event, s *sub) {
 	if s.isAllowedToWrite() {
 		go e.Run(b.data)
 	}
 }
 
-func (b *Bus) ConnectToRead() *Sub {
+func (b *Bus) ConnectToRead() *sub {
 	s := newSub(true, false)
 
 	return b.addSub(s)
 }
 
-func (b *Bus) ConnectToWrite() *Sub {
+func (b *Bus) ConnectToReadAndWrite() *sub {
 	s := newSub(true, true)
 
 	return b.addSub(s)
 }
 
-func (b *Bus) addSub(s *Sub) *Sub {
+func (b *Bus) addSub(s *sub) *sub {
 	b.subs = append(b.subs, s)
 
 	return s

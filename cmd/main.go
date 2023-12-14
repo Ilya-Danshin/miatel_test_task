@@ -29,17 +29,18 @@ func (e *Event) Signal() {
 func main() {
 
 	e1 := Event{str: "sas"}
-	e2 := Event{str: "rar"}
+	//e2 := Event{str: "rar"}
 
 	b := bus.New()
 	s1 := b.ConnectToRead()
-	s2 := b.ConnectToWrite()
+	s2 := b.ConnectToReadAndWrite()
 
 	b.AddEvent(&e1, s1)
 	b.AddEvent(&e1, s2)
-	b.AddEvent(&e2, s2)
+	//b.AddEvent(&e2, s2)
 
 	for {
 		fmt.Println(s1.Read())
+		fmt.Println(s2.Read())
 	}
 }
