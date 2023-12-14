@@ -10,8 +10,6 @@ type Bus struct {
 	data chan event.Event
 	m    sync.Mutex
 
-	queue []event.Event
-
 	subs []*sub
 }
 
@@ -19,9 +17,7 @@ func (b *Bus) run() {
 	for d := range b.data {
 		b.m.Lock()
 		for _, s := range b.subs {
-			if s.isAllowedToRead() {
-				s.data <- d
-			}
+			s.data <- d
 		}
 		b.m.Unlock()
 	}
